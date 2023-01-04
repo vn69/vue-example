@@ -71,6 +71,7 @@ export default {
       this.todolist = this.todolist.filter(e => !e.isDone)
     },
     resetData() {
+      this.isUndoRedo = true
       this.todolist = []
       this.undoStack = []
       this.redoStack = []

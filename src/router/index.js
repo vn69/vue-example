@@ -39,6 +39,11 @@ const routes = [
     component: () => import('../views/FetchApi.vue')
   },
   {
+    path: '/fetch-data-search',
+    name: 'fetch data search',
+    component: () => import('../views/FetchApiSearch.vue')
+  },
+  {
     path: '/demo-form',
     name: 'demo form',
     component: () => import('../views/DemoForm.vue')
