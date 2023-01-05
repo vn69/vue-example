@@ -1,14 +1,12 @@
 <template>
   <div id="app">
     <nav class="text-center">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/todo-list">Todo List Undo able</router-link> |
+      <router-link to="/">Todo List Undo able</router-link> |
+      <router-link to="/demo-form">Form</router-link> |
       <router-link to="/todo-list-1">Todo List 1 (Vuex)</router-link> |
       <router-link to="/todo-list-2">Todo List 2 (Vuex)</router-link> |
       <router-link to="/fetch-data">Fetch Data</router-link> |
       <!-- <router-link to="/fetch-data-search">Fetch Data Search</router-link> | -->
-      <router-link to="/demo-form">Form</router-link> |
     </nav>
     <router-view/>
   </div>
