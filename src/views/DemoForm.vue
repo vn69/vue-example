@@ -13,10 +13,21 @@
       <el-form-item label="Age" prop="age">
         <el-input v-model.number="ruleForm.age"></el-input>
       </el-form-item>
+      <el-form-item label="City" prop="city">
+        <el-select value-key="code" v-model="value" placeholder="Select">
+          <el-option
+            v-for="item in listCity"
+            :key="item.code"
+            :label="item.label"
+            :value="item.name">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">Submit</el-button>
         <el-button @click="resetForm('ruleForm')">Reset</el-button>
       </el-form-item>
+      
     </el-form>
   </div>
 </template>
@@ -78,14 +89,20 @@ export default {
         pass: "",
         checkPass: "",
         age: "",
+        city: null,
       },
       rules: {
         name: [{ validator: validateName, trigger: "blur" }],
         pass: [{ validator: validatePass, trigger: "blur" }],
         checkPass: [{ validator: validatePass2, trigger: "blur" }],
         age: [{ validator: checkAge, trigger: "blur" }],
+        city: [{ required: true, message: 'Please select Activity zone', trigger: 'change' }],
       },
+      listCity: [],
     };
+  },
+  created() {
+
   },
   methods: {
     submitForm(formName) {
