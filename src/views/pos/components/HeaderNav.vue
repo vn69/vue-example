@@ -5,11 +5,11 @@
         <el-autocomplete class="w-100" popper-class="custom-select" v-model="textSearch" :fetch-suggestions="querySearch" placeholder="Please input">
           <i class="el-icon-search el-input__icon" slot="suffix"></i>
           <template slot-scope="{ item }">
-            <div class="product_item h-100 d-flex px-2 py-2 align-items-center" @click.stop="() => selectProduct(item)">
+            <div @mouseleave="(e) => mouseToProduct(e, 'leave')" @mouseenter="(e) => mouseToProduct(e, 'enter')" class="product_item h-100 d-flex px-2 py-2 align-items-center" @click.stop="() => selectProduct(item)">
               <el-image class="product_item_image me-2" :src="item.image" lazy></el-image>
-              <div>
-                <div class="h5">{{ item.title }}</div>
-                <b>$ {{ item.price }}</b>
+              <div class="product_item_wrap">
+                <div class="h5 product_item_title">{{ item.title }}</div>
+                <b class="">$ {{ item.price }}</b>
               </div>
             </div>
           </template>
@@ -51,6 +51,15 @@ export default {
         return product.title.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
       };
     },
+    mouseToProduct(event, mouseEvent) {
+      const e = event.target.getElementsByClassName("product_item_title")[0]
+      const parentW = event.target.offsetWidth - 70
+      const childW = e.offsetWidth
+      if(childW > parentW) {
+        if(mouseEvent == "enter") e.classList.add("do-animation")
+        else if (mouseEvent == "leave") e.classList.remove("do-animation")
+      }
+    }
   },
   computed: {
     ...mapGetters("pos", ["get_products"]),
@@ -66,6 +75,14 @@ export default {
 </style>
 
 <style lang="scss">
+@keyframes urmove {
+  from {
+    left: 0;
+  }
+  to {
+    left: -100%;
+  }
+}
 .custom-select {
   .el-autocomplete-suggestion__list li {
     padding: 0 !important;
@@ -74,8 +91,13 @@ export default {
       background-color: rgb(222, 222, 128);
     }
   }
-  .product_item {
-    
+  .product_item_wrap {
+    flex: 1;
+    display: flex;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+    align-items: end;
   }
   .product_item_image {
     height: 60px;
@@ -83,6 +105,15 @@ export default {
     min-width: 60px;
     object-fit: cover;
   }
+  .product_item_title {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .do-animation {
+    animation: urmove 6s linear infinite;
+  }
+  
   .el-scrollbar__wrap {
     max-height: 700px;
   }
