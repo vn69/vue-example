@@ -6,8 +6,8 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'todo list',
-    component: () => import('../views/TodoList.vue')
+    name: 'todo list muti',
+    component: () => import('../views/todo-list-muti/TodoListMuti.vue')
   },
   {
     path: '/todo-list-1',
@@ -33,6 +33,11 @@ const routes = [
     path: '/demo-form',
     name: 'demo form',
     component: () => import('../views/DemoForm.vue')
+  },
+  {
+    path: '/pos',
+    name: 'pos',
+    component: () => import('../views/pos/SalePos.vue')
   },
 ]
 

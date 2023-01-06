@@ -9,6 +9,7 @@ export function getListCity() {
     return item
   }).sort((a,b) => a.code - b.code)
 }
+
 export function getListDistrict(cityCode) {
   if(cityCode) {
     let result = []
@@ -21,6 +22,7 @@ export function getListDistrict(cityCode) {
     return result
   } else return []
 }
+
 export function getListWard(districtCode) {
   if(districtCode) {
     let result = []

@@ -5,7 +5,9 @@
     <el-button @click="addTodo" type="primary" :disabled="todoName.trim().length == 0">Add</el-button>
     <div class="body my-2">
       <div v-for="(item, i) in filterTask" :key="i">
-        <el-checkbox v-model="item.isDone"
+        <el-checkbox 
+          :value="item.isDone"
+          @change="() => checkTodolist(i)"
           ><div :class="{ checked: item.isDone }">{{ item.name }}</div></el-checkbox
         >
       </div>
@@ -34,7 +36,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["addTask", "clearDoneTask"]),
+    ...mapMutations("todo", ["addTask", "clearDoneTask", "checkTodolist"]),
     addTodo() {
       this.todoName = this.todoName.trim();
       if (this.todoName) {
@@ -45,7 +47,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["completedTask", "unCompleteTask", "getTodolist"]),
+    ...mapGetters("todo", ["completedTask", "unCompleteTask", "getTodolist"]),
     filterTask() {
       switch (this.typeTodo) {
         case "uncomplete":
