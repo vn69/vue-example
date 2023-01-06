@@ -1,10 +1,22 @@
 <template>
-  <div>pos</div>
+  <div>
+    <HeaderNav></HeaderNav>
+    <div v-loading="loading" class="row">
+      <div class="col-8">
+
+      </div>
+      <div class="col-4"></div>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from "axios";
+import HeaderNav from './components/HeaderNav.vue';
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
+  components: { HeaderNav },
   data() {
     return {
       test: "",
@@ -12,34 +24,32 @@ export default {
     };
   },
   created() {
-    this.fetchData();
+    this.getAllProduct();
   },
   methods: {
-    async fetchData() {
-      const options = {
-        method: 'GET',
-        url: 'https://amazon-product-reviews-keywords.p.rapidapi.com/product/search',
-        params: {keyword: 'iphone', country: 'US', category: 'aps'},
-        headers: {
-          'X-RapidAPI-Key': 'SIGN-UP-FOR-KEY',
-          'X-RapidAPI-Host': 'amazon-product-reviews-keywords.p.rapidapi.com'
-        }
-      };
-
+    ...mapMutations("pos", ["set_products"]),
+    async getAllProduct() {
+      if(this.get_products.length) return
       this.loading = true;
       try {
-        const response = await axios.request(options);
-        if (response.status == 200) {
-          console.log(response);
+        const response = await axios.get("https://fakestoreapi.com/products");
+        if(response.status == 200) {
+          console.log(response)
+          this.set_products(response.data)
         } else {
+          this.$toast.error("Cannot get all product");
         }
       } catch (error) {
         console.log(error);
+        this.$toast.error("Cannot get all product");
       } finally {
         this.loading = false;
       }
     },
   },
+  computed: {
+    ...mapGetters("pos",["get_products"])
+  }
 };
 </script>
 
