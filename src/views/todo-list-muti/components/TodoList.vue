@@ -51,7 +51,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations("undo", ["set_undoStack", "set_redoStack", "set_isUndoRedo"]),
+    ...mapMutations("undo", ["set_isUndoRedo","saveHandleUndo"]),
     addTodo() {
       this.todoName = this.todoName.trim();
       if (this.todoName) {
@@ -65,12 +65,6 @@ export default {
     },
     clearDoneItem() {
       this.todolist = this.todolist.filter((e) => !e.isDone);
-    },
-    saveHandleUndo(command) {
-      this.set_redoStack([]);
-      const undoStack = _.cloneDeep(this.get_undoStack);
-      undoStack.push(command);
-      this.set_undoStack(undoStack);
     },
   },
   watch: {
@@ -111,7 +105,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("undo", ["get_undoStack", "get_isUndoRedo"]),
+    ...mapGetters("undo", ["get_isUndoRedo"]),
     filterTask() {
       switch (this.typeTodo) {
         case "uncomplete":
