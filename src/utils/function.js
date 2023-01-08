@@ -26,3 +26,20 @@ export function removeVietnameseTones(str) {
   str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
   return str;
 }
+
+export function convertToRawString(string) {
+  if(string) {
+    const text = string.toString()
+    return removeVietnameseTones(text.toLowerCase())
+  } else return ""
+}
+
+export function saveLocalStore(name, data) {
+  if(name) {
+    localStorage.setItem(name, JSON.stringify(data))
+  }
+}
+
+export function getLocalStore(name) {
+  if(name) return JSON.parse(localStorage.getItem(name))
+}
