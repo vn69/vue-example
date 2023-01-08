@@ -42,9 +42,10 @@ export default {
       this.set_carts(carts);
     },
 
-    resetCartMixin() {
+    resetCartMixin(index) {
+      const id = index ? index : this.get_cartId
       let carts = _.cloneDeep(this.get_carts);
-      carts[this.get_cartId] = [];
+      carts[id] = [];
       this.set_carts(carts);
     },
 

@@ -34,7 +34,7 @@
             <el-table-column label="Thành tiền">
               <template slot-scope="scope"> $ {{ (scope.row.quantity * scope.row.price) | formatMoneyUs }} </template>
             </el-table-column>
-            <el-table-column label="Operations">
+            <el-table-column label="">
               <template slot-scope="scope">
                 <el-button type="danger" size="mini" @click="deleteItem(scope.row)" icon="el-icon-delete"></el-button>
               </template>
@@ -122,7 +122,7 @@ export default {
     paymentMoney() {
       if(this.cart.length) {
         console.log(this.cart)
-        this.resetCartMixin()
+        this.resetCartMixin(this.get_cartId)
         this.$toast.success("Đã thanh toán thành công!");
       } else {
         this.$toast.error("Đơn hàng không có sản phẩm nào!");

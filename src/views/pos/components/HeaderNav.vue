@@ -84,7 +84,11 @@ export default {
         confirmButtonText: "Xóa",
         callback: (action) => {
           if (action == "confirm") {
-            this.doRemoveTab(index);
+            if(this.get_carts.length > 1) this.doRemoveTab(index);
+            else  if(this.get_carts.length == 1) {
+              this.resetCartMixin(index);
+              this.$toast.success("Đã xóa đơn hàng!");
+            } 
           }
         },
       });
