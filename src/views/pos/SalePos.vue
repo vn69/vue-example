@@ -77,7 +77,6 @@
                   <el-radio-button label="%"></el-radio-button>
                 </el-radio-group>
               </div>
-                {{  cartNow.payment.discount["đ"]}}
               <div class="text-danger">
                 - {{ totalDiscount | formatMoney }}
                 <span v-if="cartNow.payment.discount.type == '%'"> (-{{ +cartNow.payment.discount["%"] }}%) </span>
