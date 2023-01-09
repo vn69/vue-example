@@ -2,7 +2,7 @@
   <div>
     <HeaderNav :cartsData="cartsData"></HeaderNav>
     <div class="container">
-      <div v-loading="loading" class="row m-3">
+      <div v-loading="loading" class="row mt-3">
         <div class="col-8">
           <el-card>
             <div slot="header">
