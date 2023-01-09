@@ -115,8 +115,20 @@
             <el-form-item label="Tổng thanh toán:">
               <b> {{ totalOderFinal | formatMoney }} </b>
             </el-form-item>
+            <el-form-item label="Tiền khách đưa:">
+              <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model="cartNow.payment.customerPay" v-bind="moneyConfig"></number>
+            </el-form-item>
+            <div>
+              <el-button @click="cartNow.payment.customerPay = item" class="mb-2 me-2 ms-0" v-for="(item, i) in suggestMoneyList" :key="i">{{ item | formatMoney }}</el-button>
+            </div>
+            <el-form-item class="mb-0" label="Tiền thừa:">
+              <b>{{ getReturnMoney > 0 ? getReturnMoney : 0 | formatMoney }}</b>
+            </el-form-item>
           </el-form>
-          <el-button type="primary" @click="paymentMoney">Thanh toán</el-button>
+          <div class="mt-3 d-flex justify-content-center">
+            <el-button type="primary" :disabled="getReturnMoney < 0" @click="paymentMoney">Thanh toán</el-button>
+            <el-button type="primary" disabled>Thanh toán đa phương thức</el-button>
+          </div>
         </el-card>
       </div>
     </div>
@@ -130,6 +142,7 @@ import { mapGetters, mapMutations } from "vuex";
 import ProductItem from "./components/ProductItem.vue";
 import utils from "./utils";
 import _ from "lodash";
+import { getListSuggestMoney } from "../../utils/function.js";
 
 export default {
   components: { HeaderNav, ProductItem },
@@ -138,6 +151,7 @@ export default {
     return {
       loading: false,
       cartsData: [],
+      suggestMoneyList: [],
     };
   },
   created() {
@@ -202,6 +216,12 @@ export default {
       },
       immediate: true,
     },
+    totalOderFinal: {
+      handler(val) {
+        this.suggestMoneyList = getListSuggestMoney(val);
+        if(val) this.cartNow.payment.customerPay = 0
+      },
+    },
   },
   computed: {
     ...mapGetters("pos", ["get_products", "get_productsMap", "get_carts", "get_cartId"]),
@@ -209,7 +229,8 @@ export default {
       let total = 0;
       this.cartNow.cart.length &&
         this.cartNow.cart.map((e) => {
-          total += this.getProductById(e.productId).price * e.quantity;
+          const product = this.getProductById(e.productId);
+          total += product ? product.price * e.quantity : 0;
         });
       return +total;
     },
@@ -229,6 +250,9 @@ export default {
     },
     cartNow() {
       return this.cartsData[this.get_cartId];
+    },
+    getReturnMoney() {
+      return this.cartNow.payment.customerPay - this.totalOderFinal;
     },
   },
 };

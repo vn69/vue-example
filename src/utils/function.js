@@ -1,11 +1,11 @@
 export function removeVietnameseTones(str) {
-  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
-  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
-  str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
-  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
-  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
-  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
-  str = str.replace(/đ/g,"d");
+  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+  str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+  str = str.replace(/đ/g, "d");
   str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
   str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
   str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
@@ -19,27 +19,73 @@ export function removeVietnameseTones(str) {
   str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
   // Remove extra spaces
   // Bỏ các khoảng trắng liền nhau
-  str = str.replace(/ + /g," ");
+  str = str.replace(/ + /g, " ");
   str = str.trim();
   // Remove punctuations
   // Bỏ dấu câu, kí tự đặc biệt
-  str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
+  str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
   return str;
 }
 
 export function convertToRawString(string) {
-  if(string) {
-    const text = string.toString()
-    return removeVietnameseTones(text.toLowerCase())
-  } else return ""
+  if (string) {
+    const text = string.toString();
+    return removeVietnameseTones(text.toLowerCase());
+  } else return "";
 }
 
 export function saveLocalStore(name, data) {
-  if(name) {
-    localStorage.setItem(name, JSON.stringify(data))
+  if (name) {
+    localStorage.setItem(name, JSON.stringify(data));
   }
 }
 
 export function getLocalStore(name) {
-  if(name) return JSON.parse(localStorage.getItem(name))
+  if (name) return JSON.parse(localStorage.getItem(name));
+}
+
+export function getListSuggestMoney(money) {
+  const listMoney = [];
+  if (money) {
+    let num = Math.ceil(money / 1000);
+    console.log(num);
+    if (num) {
+      listMoney.push(num * 1000);
+      num++
+      listMoney.push(num * 1000);
+      num = getNextMoney(num);
+      listMoney.push(num*1000)
+    }
+  }
+  return listMoney;
+}
+function lastDigit(n) {
+  return n % 10;
+}
+
+function getNextMoney(num) {
+  switch (lastDigit(num)) {
+    case 0:
+      return Math.ceil(num/10)*10
+    case 1:
+      return num+1
+    case 2:
+      return num+3
+    case 3:
+      return num+2
+    case 4:
+      return num+1
+    case 5:
+      return num+5
+    case 6:
+      return num+4
+    case 7:
+      return num+3
+    case 8:
+      return num+2
+    case 9:
+      return num+1
+    default:
+      return Math.ceil(num/10)*10
+  }
 }

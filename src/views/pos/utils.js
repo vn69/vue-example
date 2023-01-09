@@ -8,6 +8,7 @@ export default {
         cart: [],
         payment: {
           exchange: 23000,
+          customerPay: 0,
           discount: {
             type: "đ",
             đ: 0,
