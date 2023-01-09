@@ -1,70 +1,44 @@
 import _ from "lodash";
-import { mapGetters, mapMutations } from "vuex";
-
+import { mapGetters } from "vuex";
 export default {
+  data() {
+    return {
+      newCartRaw: {
+        id: _.uniqueId(),
+        cart: [],
+        payment: {
+          exchange: 23000,
+          discount: {
+            type: "đ",
+            đ: 0,
+            "%": 0,
+          },
+          tax: {
+            type: "đ",
+            đ: 0,
+            "%": 0,
+          },
+        },
+      },
+    };
+  },
   methods: {
-    ...mapMutations("pos", ["set_carts"]),
-    changeQuantityItemWithTypeMixin(product, type = "plus") {
-      let carts = _.cloneDeep(this.get_carts);
-      let cart = carts[this.get_cartId];
-      if (cart.length == 0) {
-        // chưa có sp
-        if (type == "plus") addNewItem(cart, product);
-        this.set_carts(carts);
-      } else {
-        // đã có sp
-        const findedProduct = cart.find((e) => e.id == product.id);
-        if (findedProduct) {
-          if (type == "plus") findedProduct.quantity++;
-          if (type == "minus") findedProduct.quantity--;
-          this.set_carts(carts);
-        } else {
-          if (type == "plus") addNewItem(cart, product);
-          this.set_carts(carts);
-        }
-      }
+    getProductById(id){
+      return this.get_productsMap[id]
     },
-    changeQuantityItemMixin(product, quantity) {
-      let carts = _.cloneDeep(this.get_carts);
-      let cart = carts[this.get_cartId];
-      const findedProduct = cart.find((e) => e.id == product.id);
-      if (findedProduct) {
-        findedProduct.quantity = quantity;
-        this.set_carts(carts);
-      } else {
-        this.set_carts(carts);
-      }
+    checkPercentMixin(parent, key) {
+      if (parent[key] > 100) parent[key] = 100;
+      if (parent[key] < 0) parent[key] = 0;
     },
-    deleteItemInCartMixin(product) {
-      let carts = _.cloneDeep(this.get_carts);
-      let cart = carts[this.get_cartId].filter((e) => e.id != product.id);
-      carts[this.get_cartId] = cart
-      this.set_carts(carts);
+    getFinalValueMixin(value, parent) {
+      if (parent.type == "đ") return +parent["đ"];
+      if (parent.type == "%") return Math.floor(+value * (+parent["%"] / 100));
     },
-
-    resetCartMixin(index) {
-      const id = index ? index : this.get_cartId
-      let carts = _.cloneDeep(this.get_carts);
-      carts[id] = [];
-      this.set_carts(carts);
-    },
-
-    doRemoveTabMixin(index) {
-      let carts = _.cloneDeep(this.get_carts);
-      carts.splice(index, 1);
-      this.set_carts(carts);
-      this.set_cartId(0)
-    },
+    checkMaxValue(item) {
+      console.log(item);
+    }
   },
   computed: {
-    ...mapGetters("pos", ["get_products", "get_carts", "get_cartId"]),
-  },
+    ...mapGetters("pos", ["get_productsMap"])
+  }
 };
-
-function addNewItem(cart, product) {
-  cart.push({
-    ...product,
-    quantity: 1,
-  });
-  return cart;
-}

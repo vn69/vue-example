@@ -12,7 +12,7 @@
       <div class="w-50 d-flex justify-content-between align-items-center">
         <div class="d-flex">
           <el-radio-group class="ms-2 custom-list-oder" v-model="tab">
-            <el-radio-button v-for="(item, index) in get_carts" :key="index" :label="index">
+            <el-radio-button v-for="(item, index) in cartsData" :key="index" :label="index">
               {{ "Đơn " + (+index + 1) }}
               <i @click.prevent="() => removeTab(index)" class="el-icon-close text-danger"></i>
             </el-radio-button>
@@ -38,6 +38,7 @@ import utils from "../utils";
 
 export default {
   components: { ProductItem },
+  props: ["cartsData"],
   mixins: [utils],
   data() {
     return {
@@ -49,7 +50,7 @@ export default {
     this.tab = this.get_cartId;
   },
   methods: {
-    ...mapMutations("pos", ["set_carts", "set_cartId"]),
+    ...mapMutations("pos", ["set_cartId"]),
     querySearch(queryString, cb) {
       const productsData = this.get_products;
       const search = convertToRawString(queryString.trim());
@@ -57,57 +58,73 @@ export default {
       cb(results);
     },
     selectProduct(product) {
-      this.changeQuantityItemWithTypeMixin(product, "plus");
+      const findedProduct = this.cart.find((e) => e.productId == product.id);
+
+      if (findedProduct) {
+        findedProduct.quantity++;
+      } else {
+        this.cart.push({
+          productId: product.id,
+          quantity: 1,
+        });
+      }
       this.$toast.success("Đã thêm vào giỏ hàng!");
     },
 
     // tab
     addTab() {
-      let carts = _.cloneDeep(this.get_carts);
-      const cart = carts[this.get_cartId];
-      if (cart.length == 0) {
-        this.$toast.warning("Không thể tạo đơn hàng mới khi đơn hiện tại không có sản phẩm!");
+      if (this.cart.length == 0) {
+        this.$toast.error("Không thể tạo đơn hàng mới khi đơn hiện tại không có sản phẩm!");
         return;
       }
-      const index = carts.length;
-      carts.push([]);
-      this.set_carts(carts);
-      this.set_cartId(index)
+      const index = this.cartsData.length;
+      const newCart = _.cloneDeep(this.newCartRaw);
+      this.cartsData.push(newCart);
+      this.set_cartId(index);
     },
     removeTab(index) {
-      if (this.get_carts[index].length == 0) {
+      console.log(index);
+      if (this.cartsData[index].cart.length == 0) {
         this.doRemoveTab(index);
         return;
       }
-
       this.$alert("Bạn có muốn xóa đơn hàng?", "Cảnh báo", {
         confirmButtonText: "Xóa",
         callback: (action) => {
           if (action == "confirm") {
-            if(this.get_carts.length > 1) this.doRemoveTab(index);
-            else  if(this.get_carts.length == 1) {
-              this.resetCartMixin(index);
-              this.$toast.success("Đã xóa đơn hàng!");
-            } 
+            this.doRemoveTab(index)
           }
         },
       });
     },
+    clearCart() {
+      this.cartsData[0].cart = [];
+      this.$toast.success("Đã xóa đơn hàng!");
+    },
     doRemoveTab(index) {
-      this.doRemoveTabMixin(index)
+      if (this.cartsData.length == 1) {
+        this.clearCart();
+        this.set_cartId(0);
+        return;
+      }
+      this.cartsData.splice(index, 1);
+      this.set_cartId(0);
       this.$toast.success("Đã xóa đơn hàng!");
     },
   },
   computed: {
-    ...mapGetters("pos", ["get_products", "get_carts", "get_cartId"]),
+    ...mapGetters("pos", ["get_products", "get_cartId"]),
+    cart() {
+      return this.cartsData[this.get_cartId].cart;
+    },
   },
   watch: {
     tab(val) {
       this.set_cartId(val);
     },
     get_cartId(val) {
-      this.tab = val
-    }
+      this.tab = val;
+    },
   },
 };
 </script>

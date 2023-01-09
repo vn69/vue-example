@@ -33,15 +33,7 @@ export default {
     return {
       todolist: [
         {
-          name: 1,
-          isDone: true,
-        },
-        {
-          name: 2,
-          isDone: false,
-        },
-        {
-          name: 3,
+          name: "Love yourself ?",
           isDone: false,
         },
       ],

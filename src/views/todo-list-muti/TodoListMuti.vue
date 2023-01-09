@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="w-50 m-auto">
-      <div class="">
+      <div class="mt-2">
         <el-button size="mini" @click="addMoreTodoList" icon="el-icon-plus" type="success">Add</el-button>
         <el-button size="mini" :disabled="get_undoStack.length == 0" @click="handleUndo">Undo</el-button>
         <el-button size="mini" :disabled="get_redoStack.length == 0" @click="handleRedo">Redo</el-button>

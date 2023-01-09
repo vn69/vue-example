@@ -1,38 +1,34 @@
 <template>
   <div>
-    <HeaderNav></HeaderNav>
+    <HeaderNav :cartsData="cartsData"></HeaderNav>
     <!-- <div v-loading="loading" class="row"> -->
     <div v-loading="" class="row m-3">
       <div class="col-8">
         <el-card>
           <div slot="header">
-            <span>Đơn {{ this.get_cartId + 1 }}</span>
+            <span>Đơn {{ get_cartId + 1 }}</span>
           </div>
-          <el-table  height="600" :data="get_carts[get_cartId]" style="width: 100%">
+          <el-table height="600" :data="cartsData[get_cartId].cart" style="width: 100%">
             <el-table-column label="Sản phẩm" width="400px">
               <template slot-scope="scope">
-                <ProductItem :product="scope.row" @selectProduct=""></ProductItem>
+                <ProductItem :product="getProductById(scope.row.productId)" @selectProduct=""></ProductItem>
               </template>
             </el-table-column>
             <el-table-column label="Số lượng" width="200px">
               <template slot-scope="scope">
                 <div class="d-flex align-items-center">
-                  <el-button size="mini" @click="() => changeItem(scope.row, 'minus')" icon="el-icon-minus"></el-button>
-                  <input
-                    @keydown="skipDotAndMinusOnly"
-                    @change="(e) => changeQuantity(scope.row, e)"
-                    type="number"
-                    min="1"
-                    step="1"
-                    class="input-number-custom"
-                    :value="scope.row.quantity"
-                  />
-                  <el-button size="mini" @click="() => changeItem(scope.row, 'plus')" icon="el-icon-plus"></el-button>
+                  <el-input-number
+                    @keydown.native="skipDotAndMinusOnly"
+                    @change="(quantity) => changeQuantityProduct(quantity, scope.row)"
+                    v-model="scope.row.quantity"
+                    :min="0"
+                    :step="1"
+                  ></el-input-number>
                 </div>
               </template>
             </el-table-column>
             <el-table-column label="Thành tiền">
-              <template slot-scope="scope"> $ {{ (scope.row.quantity * scope.row.price) | formatMoneyUs }} </template>
+              <template slot-scope="scope"> $ {{ (scope.row.quantity * getProductById(scope.row.productId).price) | formatMoneyUs }} </template>
             </el-table-column>
             <el-table-column label="">
               <template slot-scope="scope">
@@ -44,21 +40,81 @@
       </div>
       <div class="col-4">
         <el-card>
-          <div slot="header">
+          <div class="d-flex justify-content-between" slot="header">
             <span>Thanh Toán</span>
+            <span>$ {{ totalOderUs | formatMoneyUs }}</span>
           </div>
-          <el-form label-position="right" label-width="100px" :model="paymentForm">
+          <el-form label-position="right" label-width="130px" :model="cartNow.payment">
             <el-form-item label="tỉ giá ngoại tệ:">
-              <number class="px-2" @keydown.native="skipDotAndMinusOnly" v-model="paymentForm.exchange" v-bind="moneyConfig"></number>
-            </el-form-item>
-            <el-form-item label="Chiết khấu:">
-              <number class="px-2" @keydown.native="skipDotAndMinusOnly" v-model="paymentForm.discount" v-bind="moneyConfig"></number>
-            </el-form-item>
-            <el-form-item label="Thuế:">
-              <number class="px-2" @keydown.native="skipDotAndMinusOnly" v-model="paymentForm.tax" v-bind="moneyConfig"></number>
+              <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model="cartNow.payment.exchange" v-bind="moneyConfig"></number>
             </el-form-item>
             <el-form-item label="Tổng tiền:">
-              {{totalOder | formatMoney}} đ
+              <b> {{ totalOder | formatMoney }} </b>
+            </el-form-item>
+            <el-form-item label="Chiết khấu:">
+              <div class="input-money-wrap">
+                <number
+                  v-if="cartNow.payment.discount.type == 'đ'"
+                  class="px-2 w-100 input-money-wrap_input"
+                  @keydown.native="skipDotAndMinusOnly"
+                  @change="checkMaxValue"
+                  v-model="cartNow.payment.discount['đ']"
+                  v-bind="moneyConfig"
+                ></number>
+                <input
+                  type="number"
+                  step="1"
+                  v-if="cartNow.payment.discount.type == '%'"
+                  class="px-2 w-100 input-money-wrap_input"
+                  @keydown="skipDotAndMinusOnly"
+                  @input="() => checkPercentMixin(cartNow.payment.discount, '%')"
+                  v-model="cartNow.payment.discount['%']"
+                  :max="100"
+                  :min="0"
+                />
+                <el-radio-group class="input-money-wrap_type" v-model="cartNow.payment.discount.type">
+                  <el-radio-button label="đ"></el-radio-button>
+                  <el-radio-button label="%"></el-radio-button>
+                </el-radio-group>
+              </div>
+                {{  cartNow.payment.discount["đ"]}}
+              <div class="text-danger">
+                - {{ totalDiscount | formatMoney }}
+                <span v-if="cartNow.payment.discount.type == '%'"> (-{{ +cartNow.payment.discount["%"] }}%) </span>
+              </div>
+            </el-form-item>
+            <el-form-item label="Thuế:">
+              <div class="input-money-wrap">
+                <number
+                  v-if="cartNow.payment.tax.type == 'đ'"
+                  class="px-2 w-100 input-money-wrap_input"
+                  @keydown.native="skipDotAndMinusOnly"
+                  v-model="cartNow.payment.tax['đ']"
+                  v-bind="moneyConfig"
+                ></number>
+                <input
+                  type="number"
+                  step="1"
+                  v-if="cartNow.payment.tax.type == '%'"
+                  class="px-2 w-100 input-money-wrap_input"
+                  @keydown="skipDotAndMinusOnly"
+                  @input="() => checkPercentMixin(cartNow.payment.tax, '%')"
+                  v-model="cartNow.payment.tax['%']"
+                  :max="100"
+                  :min="0"
+                />
+                <el-radio-group class="input-money-wrap_type" v-model="cartNow.payment.tax.type">
+                  <el-radio-button label="đ"></el-radio-button>
+                  <el-radio-button label="%"></el-radio-button>
+                </el-radio-group>
+              </div>
+              <div class="text-danger">
+                + {{ totalTax | formatMoney }}
+                <span v-if="cartNow.payment.tax.type == '%'"> (+{{ +cartNow.payment.tax["%"] }}%) </span>
+              </div>
+            </el-form-item>
+            <el-form-item label="Tổng thanh toán:">
+              <b> {{ totalOderFinal | formatMoney }} </b>
             </el-form-item>
           </el-form>
           <el-button type="primary" @click="paymentMoney">Thanh toán</el-button>
@@ -74,73 +130,107 @@ import productCode from "../../utils/mixin/product.js";
 import { mapGetters, mapMutations } from "vuex";
 import ProductItem from "./components/ProductItem.vue";
 import utils from "./utils";
+import _ from "lodash";
 
 export default {
   components: { HeaderNav, ProductItem },
   mixins: [productCode, utils],
   data() {
     return {
-      test: 0,
       loading: false,
-      paymentForm: {
-        exchange: 23000,
-        tax: 0,
-        discount: 0,
-      },
+      cartsData: [],
     };
   },
   created() {
-    this.getAllProduct();
+    this.getAllProductMixin();
+    this.initData();
   },
   methods: {
     ...mapMutations("pos", ["set_carts"]),
-    changeQuantity(product, e) {
-      let quantity = e.target.value;
-      if (!quantity || quantity == 0) quantity = 1;
-      this.changeQuantityItemMixin(product, +quantity);
-    },
-    changeItem(product, type = "plus") {
-      if (type == "minus" && product.quantity == 1) {
-        this.deleteItem(product);
-        return;
+    initData() {
+      const carts = _.cloneDeep(this.get_carts);
+      if (carts.length == 0) {
+        const newCart = _.cloneDeep(this.newCartRaw);
+        carts.push(newCart);
       }
-      this.changeQuantityItemWithTypeMixin(product, type);
+      this.cartsData = carts;
     },
-
-    confirmDeteleItem() {},
     deleteItem(product) {
       this.$alert("Bạn có muốn xóa sản phẩm", "Cảnh báo", {
         confirmButtonText: "Xóa",
         callback: (action) => {
           if (action == "confirm") {
-            this.deleteItemInCartMixin(product);
-            this.$toast.success("Đã xóa sản phẩm!");
+            const index = this.cartNow.cart.findIndex((e) => e.productId == product.productId);
+            console.log(index, this.cartNow.cart);
+            if (index > -1) {
+              this.cartNow.cart.splice(index, 1);
+              this.$toast.success("Đã xóa sản phẩm!");
+            }
+          } else {
+            if (product.quantity == 0) {
+              product.quantity = 1;
+            }
           }
         },
       });
     },
+    changeQuantityProduct(quantity, product) {
+      if (quantity == 0) this.deleteItem(product);
+    },
     paymentMoney() {
-      if(this.cart.length) {
-        console.log(this.cart)
-        this.resetCartMixin(this.get_cartId)
+      if (this.cartNow.cart.length) {
+        const newCart = _.cloneDeep(this.newCartRaw);
+        this.cartsData.splice(this.get_cartId, 1, newCart);
         this.$toast.success("Đã thanh toán thành công!");
       } else {
         this.$toast.error("Đơn hàng không có sản phẩm nào!");
       }
-    }
+    },
+  },
+  watch: {
+    cartsData: {
+      handler(val) {
+        const data = _.cloneDeep(val);
+        console.log("save carts", data);
+        this.set_carts(data);
+      },
+      deep: true,
+    },
+    get_cartId: {
+      handler() {
+        console.log("init data");
+        this.initData();
+      },
+      immediate: true,
+    },
   },
   computed: {
-    ...mapGetters("pos", ["get_products", "get_carts", "get_cartId"]),
-    totalOder() {
-      let total = 0
-      this.cart.length && this.cart.map(e => {
-        total+=(e.price * e.quantity)
-      })
-      return total*this.paymentForm.exchange
+    ...mapGetters("pos", ["get_products", "get_productsMap", "get_carts", "get_cartId"]),
+    totalOderUs() {
+      let total = 0;
+      this.cartNow.cart.length &&
+        this.cartNow.cart.map((e) => {
+          total += this.getProductById(e.productId).price * e.quantity;
+        });
+      return +total;
     },
-    cart() {
-      return this.get_carts[this.get_cartId]
-    }
+    totalOder() {
+      return this.totalOderUs * +this.cartNow.payment.exchange;
+    },
+    totalDiscount() {
+      const discount = this.getFinalValueMixin(this.totalOder, this.cartNow.payment.discount);
+      return +discount;
+    },
+    totalTax() {
+      const tax = this.getFinalValueMixin(this.totalOder - this.totalDiscount, this.cartNow.payment.tax);
+      return +tax;
+    },
+    totalOderFinal() {
+      return this.totalOder - this.totalDiscount + this.totalTax;
+    },
+    cartNow() {
+      return this.cartsData[this.get_cartId];
+    },
   },
 };
 </script>
