@@ -6,6 +6,11 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    name: 'pos',
+    component: () => import('../views/pos/SalePos.vue')
+  },
+  {
+    path: '/muti-todo',
     name: 'todo list muti',
     component: () => import('../views/todo-list-muti/TodoListMuti.vue')
   },
@@ -34,11 +39,7 @@ const routes = [
     name: 'demo form',
     component: () => import('../views/DemoForm.vue')
   },
-  {
-    path: '/pos',
-    name: 'pos',
-    component: () => import('../views/pos/SalePos.vue')
-  },
+  
 ]
 
 const router = new VueRouter({

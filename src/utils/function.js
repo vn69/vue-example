@@ -48,13 +48,25 @@ export function getListSuggestMoney(money) {
   const listMoney = [];
   if (money) {
     let num = Math.ceil(money / 1000);
-    console.log(num);
     if (num) {
       listMoney.push(num * 1000);
       num++
       listMoney.push(num * 1000);
-      num = getNextMoney(num);
-      listMoney.push(num*1000)
+      while (lastDigit(num) != 0) {
+        num = getNextMoney(num)
+        listMoney.push(num * 1000);
+      }
+      num = num/10
+      while (lastDigit(num) != 0) {
+        num = getNextMoney(num)
+        listMoney.push(num * 10000);
+      }
+      num = num/10
+      while (lastDigit(num) != 0 && lastDigit(num) != 5  ) {
+        num = getNextMoney(num)
+        listMoney.push(num * 100000);
+      }
+      
     }
   }
   return listMoney;
@@ -66,7 +78,7 @@ function lastDigit(n) {
 function getNextMoney(num) {
   switch (lastDigit(num)) {
     case 0:
-      return Math.ceil(num/10)*10
+      return num+10
     case 1:
       return num+1
     case 2:
@@ -86,6 +98,6 @@ function getNextMoney(num) {
     case 9:
       return num+1
     default:
-      return Math.ceil(num/10)*10
+      return num+10
   }
 }
