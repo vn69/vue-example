@@ -5,7 +5,7 @@
     class="product_item h-100 d-flex px-2 py-2 align-items-center"
     @click.stop="() => $emit('selectProduct',product)"
   >
-    <el-image class="product_item_image me-2" :src="product.image" lazy></el-image>
+    <el-image class="product_item_image me-2" :src="product.image"></el-image>
     <div class="product_item_wrap">
       <b class="product_item_title">{{ product.title }}</b>
       <b class="w-100">$ {{ product.price }}</b>
