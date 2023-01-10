@@ -32,10 +32,12 @@ import ListProduct from "./components/ListProduct.vue";
 import { mapGetters, mapMutations } from "vuex";
 import _ from "lodash";
 import productCode from "../../utils/mixin/product.js";
+import utils from "./utils"
+import { saveLocalStore, getLocalStore } from "@/utils/function";
 
 export default {
   components: { HeaderNav, PaymentPos, ListProduct },
-  mixins: [productCode],
+  mixins: [productCode, utils],
   data() {
     return {
       loading: false,
@@ -44,12 +46,12 @@ export default {
   },
   created() {
     this.getAllProductMixin();
-    this.initData();
+    this.initData()
   },
   methods: {
-    ...mapMutations("pos", ["set_carts"]),
     initData() {
-      const carts = _.cloneDeep(this.get_carts);
+      console.log("init data");
+      const carts = getLocalStore("carts") || []
       if (carts.length == 0) {
         const newCart = _.cloneDeep(this.newCartRaw);
         carts.push(newCart);
@@ -59,23 +61,15 @@ export default {
   },
   watch: {
     cartsData: {
-      handler(val) {
-        const data = _.cloneDeep(val);
+      handler(data) {
         console.log("save carts");
-        this.set_carts(data);
+        saveLocalStore("carts", data);
       },
       deep: true,
     },
-    get_cartId: {
-      handler() {
-        console.log("init data");
-        this.initData();
-      },
-      immediate: true,
-    },
   },
   computed: {
-    ...mapGetters("pos", ["get_carts", "get_cartId"]),
+    ...mapGetters("pos", ["get_cartId"]),
   },
 };
 </script>

@@ -10,6 +10,7 @@
         <div class="body">{{ post.body }}</div>
       </div>
     </div>
+    <el-button @click="isCheckLoading('loading')">test</el-button>
   </div>
 </template>
 
@@ -44,6 +45,9 @@ export default {
         this.loading = false
       }
     },
+    isCheckLoading(e) {
+      this[e] = !this[e]
+    }
   },
 };
 </script>

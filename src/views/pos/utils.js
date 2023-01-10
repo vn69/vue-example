@@ -10,12 +10,12 @@ export default {
           exchange: 23000,
           customerPay: 0,
           discount: {
-            type: "đ",
+            type: "%",
             đ: 0,
             "%": 0,
           },
           tax: {
-            type: "đ",
+            type: "%",
             đ: 0,
             "%": 0,
           },
