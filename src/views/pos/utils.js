@@ -37,7 +37,29 @@ export default {
     },
     checkMaxValue(item) {
       console.log(item);
-    }
+    },
+    selectProductMixin(product) {
+      if(product.maxQuantity == 0) {
+        this.$toast.error("Sản phẩm đã hết hàng!");
+        return
+      }
+      const findedProduct = this.cartsData[this.get_cartId].cart.find((e) => e.productId == product.id);
+
+      if (findedProduct) {
+        console.log(333 ,product, findedProduct);
+        if(findedProduct.quantity >= product.maxQuantity) {
+          this.$toast.error(`Sản phẩm có thể bán tối đa là:${product.maxQuantity} !`);
+          return
+        }
+        findedProduct.quantity++;
+      } else {
+        this.cartsData[this.get_cartId].cart.push({
+          productId: product.id,
+          quantity: 1,
+        });
+      }
+      this.$toast.success("Đã thêm vào giỏ hàng!");
+    },
   },
   computed: {
     ...mapGetters("pos", ["get_productsMap"])

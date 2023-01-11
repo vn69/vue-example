@@ -78,7 +78,9 @@
         <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model="cartNow.payment.customerPay" v-bind="moneyConfig"></number>
       </el-form-item>
       <div>
-        <el-button @click="cartNow.payment.customerPay = item" class="mb-2 custom-btn-price" v-for="(item, i) in suggestMoneyList" :key="i">{{ item | formatMoney }}</el-button>
+        <el-button size="mini" @click="cartNow.payment.customerPay = item" class="mb-2 custom-btn-price" v-for="(item, i) in suggestMoneyList" :key="i">{{
+          item | formatMoney
+        }}</el-button>
       </div>
       <el-form-item class="mb-0" label="Tiền thừa:">
         <div>{{ getReturnMoney > 0 ? getReturnMoney : 0 | formatMoney }}</div>
@@ -95,11 +97,12 @@
 import _ from "lodash";
 import { getListSuggestMoney } from "../../../utils/function.js";
 import utils from "../utils";
+import productCode from "../../../utils/mixin/product";
 import { mapGetters } from "vuex";
 
 export default {
   props: ["cartsData"],
-  mixins: [utils],
+  mixins: [utils, productCode],
   data() {
     return {
       suggestMoneyList: [],
@@ -107,17 +110,47 @@ export default {
   },
   methods: {
     paymentMoney() {
-      if (this.cartNow.cart.length) {
-        const newCart = _.cloneDeep(this.newCartRaw);
-        this.cartsData.splice(this.get_cartId, 1, newCart);
-        this.$toast.success("Đã thanh toán thành công!");
+      const emptyCart = this.cartNow.cart.filter(e => e.quantity == 0)
+      if(emptyCart.length) {
+        this.cartNow.cart = this.cartNow.cart.filter(e => e.quantity)
+        this.$toast.error("Đơn chứa sản phẩm đã hết hàng, Vui lòng thanh toán lại!");
+        return
+      }
+      if (this.cartNow.cart.length && this.totalOderUs) {
+        if (this.checkWareHouse(this.cartNow.cart)) {
+          console.log('ok')
+          const products = _.cloneDeep(this.get_products)
+          const productsMap =  _.cloneDeep(this.get_productsMap)
+          this.cartNow.cart.forEach(item => {
+            productsMap[item.productId].maxQuantity -= item.quantity
+          });
+          products.forEach(item => {
+            item.maxQuantity = productsMap[item.id].maxQuantity
+          });
+          this.setProductsDataMixin(products)
+          console.log(this.cartNow.cart);
+          //add new Cart
+          const newCart = _.cloneDeep(this.newCartRaw);
+          this.cartsData.splice(this.get_cartId, 1, newCart);
+          this.$toast.success("Đã thanh toán thành công!");
+        } else {
+          this.$toast.error("Đơn chứa sản phẩm đã hết hàng!");
+        }
+
       } else {
         this.$toast.error("Đơn hàng không có sản phẩm nào!");
       }
     },
+    checkWareHouse(cart) {
+      let result = true
+      cart.forEach((product) => {
+        if (product.quantity > this.getProductById(product.productId).maxQuantity) return false;
+      });
+      return result;
+    },
   },
   computed: {
-    ...mapGetters("pos", ["get_cartId"]),
+    ...mapGetters("pos", ["get_cartId", "get_products"]),
     totalOderUs() {
       let total = 0;
       this.cartNow.cart.length &&
@@ -161,7 +194,10 @@ export default {
 
 <style lang="scss" scoped>
 .custom-btn-price {
-  margin: 0px 6px 12px 6px;
+  margin: 0px 6px 0 6px;
+}
+.el-form-item {
+  margin-bottom: 6px;
 }
 </style>
 

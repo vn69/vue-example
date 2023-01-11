@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table height="600" :data="cartsData[get_cartId].cart" style="width: 100%">
+    <el-table :height="showAllProducts ? 'calc(100vh - 550px)' : `calc(100vh - ${550 - 223}px)`" :data="cartsData[get_cartId].cart" style="width: 100%">
       <el-table-column label="Sản phẩm" width="400px">
         <template slot-scope="scope">
           <ProductItem :product="getProductById(scope.row.productId)" @selectProduct=""></ProductItem>
@@ -8,7 +8,7 @@
       </el-table-column>
       <el-table-column label="Số lượng" width="200px">
         <template slot-scope="scope">
-          <div class="d-flex align-items-center">
+          <div>
             <el-input-number
               style="width: 130px"
               size="medium"
@@ -16,6 +16,7 @@
               @change="(quantity) => changeQuantityProduct(quantity, scope.row)"
               v-model="scope.row.quantity"
               :min="0"
+              :max="getProductById(scope.row.productId).maxQuantity"
               :step="1"
             ></el-input-number>
           </div>
@@ -30,20 +31,42 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-card class="all-prpduct mt-2" :class="{ active: showAllProducts }">
+      <div class="row">
+        <div class="col-6 mb-2" v-for="item in productShow" :key="item.id">
+          <ProductItem class="custom-product border" :product="getProductById(item.id)" @selectProduct="selectProductMixin"></ProductItem>
+        </div>
+      </div>
+    </el-card>
+    <div class="mt-2 d-flex justify-content-between align-items-center">
+      <el-button @click="showAllProducts = !showAllProducts">Show All</el-button>
+      <el-pagination
+        v-show="showAllProducts"
+        background
+        :current-page.sync="currentPage"
+        :page-size="sizePage"
+        layout="prev, pager, next"
+        :total="get_products.length"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 import ProductItem from "./ProductItem.vue";
 import utils from "../utils";
 
 export default {
-  components: {ProductItem },
+  components: { ProductItem },
   mixins: [utils],
   props: ["cartsData"],
   data() {
-    return {};
+    return {
+      showAllProducts: false,
+      currentPage: 1,
+      sizePage: 4,
+    };
   },
   methods: {
     deleteItem(product) {
@@ -70,12 +93,33 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("pos", ["get_cartId"]),
+    ...mapGetters("pos", ["get_cartId", "get_products"]),
     cartNow() {
       return this.cartsData[this.get_cartId];
     },
-  }
+    productShow() {
+      const index = (this.currentPage - 1) * this.sizePage;
+      const result = this.get_products.slice(index, index + this.sizePage);
+      return result;
+    },
+  },
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.custom-product {
+  border-radius: 6px;
+  cursor: pointer;
+}
+.custom-product:hover {
+  background-color: #aaa;
+}
+.all-prpduct {
+  max-height: 0;
+  display: none;
+}
+.all-prpduct.active {
+  max-height: 300px;
+  display: block;
+}
+</style>

@@ -6,7 +6,7 @@
           <el-autocomplete class="w-100" popper-class="custom-select" v-model="textSearch" :fetch-suggestions="querySearch" placeholder="Searching...">
             <i class="el-icon-search el-input__icon" slot="suffix"></i>
             <template slot-scope="{ item }">
-              <ProductItem :product="item" @selectProduct="selectProduct"></ProductItem>
+              <ProductItem :product="item" @selectProduct="selectProductMixin"></ProductItem>
             </template>
           </el-autocomplete>
         </div>
@@ -24,6 +24,7 @@
             <span class="el-dropdown-link text-white">User<i class="el-icon-arrow-down el-icon--right"></i> </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="logOut">Đăng xuất</el-dropdown-item>
+              <el-dropdown-item @click.native="logOut">Refresh</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -59,20 +60,6 @@ export default {
       const results = search ? productsData.filter((e) => convertToRawString(e.title).includes(search)) : productsData;
       cb(results);
     },
-    selectProduct(product) {
-      const findedProduct = this.cart.find((e) => e.productId == product.id);
-
-      if (findedProduct) {
-        findedProduct.quantity++;
-      } else {
-        this.cart.push({
-          productId: product.id,
-          quantity: 1,
-        });
-      }
-      this.$toast.success("Đã thêm vào giỏ hàng!");
-    },
-
     // tab
     addTab() {
       if (this.cart.length == 0) {
@@ -105,8 +92,8 @@ export default {
     },
     doRemoveTab(index) {
       if (this.cartsData.length == 1) {
-        this.clearCart();
         this.set_cartId(0);
+        this.clearCart();
         return;
       }
       this.cartsData.splice(index, 1);

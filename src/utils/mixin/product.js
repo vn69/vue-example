@@ -14,10 +14,10 @@ export default {
         const response = await axios.get("https://fakestoreapi.com/products");
         if (response.status == 200) {
           console.log(response);
-          this.set_products(response.data);
-          const productsMap = arrayToObject(response.data);
-          console.log(productsMap);
-          this.set_productsMap(productsMap);
+          // fake data
+          response.data.map((e) => (e.maxQuantity = randomIntFromInterval(0, 5)));
+          
+          this.setProductsDataMixin(response.data)
         } else {
           this.$toast.error("Cannot get all product");
         }
@@ -26,6 +26,11 @@ export default {
         this.$toast.error("Cannot get all product");
       } finally {
       }
+    },
+    setProductsDataMixin(data) {
+      this.set_products(data);
+      const productsMap = arrayToObject(data);
+      this.set_productsMap(productsMap);
     },
   },
   computed: {
@@ -41,4 +46,9 @@ function arrayToObject(arr) {
     });
   }
   return map;
+}
+
+function randomIntFromInterval(min, max) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }

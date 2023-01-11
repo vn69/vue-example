@@ -30,13 +30,29 @@ html {
 
 .input-money-wrap {
   position: relative;
+
   &_input {
     padding-right: 109px !important;
   }
+
   &_type {
     right: 2px;
     position: absolute;
     top: 50%;
     transform: translate(0%, -50%);
+  }
+}
+
+.scroll-y {
+  overflow-y: auto;
+}
+
+@keyframes urmove {
+  from {
+    left: 0%;
+  }
+
+  to {
+    left: -100%;
   }
 }
