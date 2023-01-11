@@ -6,7 +6,7 @@
           <el-autocomplete class="w-100" popper-class="custom-select" v-model="textSearch" :fetch-suggestions="querySearch" placeholder="Searching...">
             <i class="el-icon-search el-input__icon" slot="suffix"></i>
             <template slot-scope="{ item }">
-              <ProductItem :product="item" @selectProduct="selectProductMixin"></ProductItem>
+              <ProductItem class="me-2" :product="item" @selectProduct="selectProductMixin"></ProductItem>
             </template>
           </el-autocomplete>
         </div>

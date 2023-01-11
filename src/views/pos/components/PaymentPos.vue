@@ -36,7 +36,7 @@
             <el-radio-button label="%"></el-radio-button>
           </el-radio-group>
         </div>
-        <div class="text-danger">
+        <div class="text-success">
           - {{ totalDiscount | formatMoney }}
           <span v-if="cartNow.payment.discount.type == '%'"> (-{{ +cartNow.payment.discount["%"] }}%) </span>
         </div>
@@ -110,24 +110,24 @@ export default {
   },
   methods: {
     paymentMoney() {
-      const emptyCart = this.cartNow.cart.filter(e => e.quantity == 0)
-      if(emptyCart.length) {
-        this.cartNow.cart = this.cartNow.cart.filter(e => e.quantity)
+      const emptyCart = this.cartNow.cart.filter((e) => e.quantity == 0);
+      if (emptyCart.length) {
+        this.cartNow.cart = this.cartNow.cart.filter((e) => e.quantity);
         this.$toast.error("Đơn chứa sản phẩm đã hết hàng, Vui lòng thanh toán lại!");
-        return
+        return;
       }
       if (this.cartNow.cart.length && this.totalOderUs) {
         if (this.checkWareHouse(this.cartNow.cart)) {
-          console.log('ok')
-          const products = _.cloneDeep(this.get_products)
-          const productsMap =  _.cloneDeep(this.get_productsMap)
-          this.cartNow.cart.forEach(item => {
-            productsMap[item.productId].maxQuantity -= item.quantity
+          console.log("ok");
+          const products = _.cloneDeep(this.get_products);
+          const productsMap = _.cloneDeep(this.get_productsMap);
+          this.cartNow.cart.forEach((item) => {
+            productsMap[item.productId].maxQuantity -= item.quantity;
           });
-          products.forEach(item => {
-            item.maxQuantity = productsMap[item.id].maxQuantity
+          products.forEach((item) => {
+            item.maxQuantity = productsMap[item.id].maxQuantity;
           });
-          this.setProductsDataMixin(products)
+          this.setProductsDataMixin(products);
           console.log(this.cartNow.cart);
           //add new Cart
           const newCart = _.cloneDeep(this.newCartRaw);
@@ -136,13 +136,12 @@ export default {
         } else {
           this.$toast.error("Đơn chứa sản phẩm đã hết hàng!");
         }
-
       } else {
         this.$toast.error("Đơn hàng không có sản phẩm nào!");
       }
     },
     checkWareHouse(cart) {
-      let result = true
+      let result = true;
       cart.forEach((product) => {
         if (product.quantity > this.getProductById(product.productId).maxQuantity) return false;
       });
@@ -206,6 +205,9 @@ export default {
   .el-form-item__label {
     font-weight: bold;
     color: #909399;
+  }
+  .el-form-item__content {
+    margin-top: -3px;
   }
 }
 </style>
