@@ -3,8 +3,8 @@
     <div class="w-50 m-auto">
       <div class="mt-2">
         <el-button size="mini" @click="addMoreTodoList" icon="el-icon-plus" type="success">Add</el-button>
-        <el-button size="mini" :disabled="get_undoStack.length == 0" @click="handleUndo">Undo</el-button>
-        <el-button size="mini" :disabled="get_redoStack.length == 0" @click="handleRedo">Redo</el-button>
+        <el-button size="mini" :disabled="get_undoStack.length == 0" @click="handleUndoHere">Undo</el-button>
+        <el-button size="mini" :disabled="get_redoStack.length == 0" @click="handleRedoHere">Redo</el-button>
         <el-button size="mini" @click="resetData" icon="el-icon-refresh" type="primary">Refresh</el-button>
       </div>
       <div v-for="item in countItem" :key="item.id">
@@ -63,6 +63,14 @@ export default {
       };
       this.saveHandleUndo(command);
     },
+    async handleUndoHere() {
+      await this.handleUndo()
+      this.set_isUndoRedo(false);
+    },
+    async handleRedoHere() {
+      await this.handleRedo()
+      this.set_isUndoRedo(false);
+    }
   },
   computed: {
     ...mapGetters("undo", ["get_undoStack", "get_redoStack",]),
