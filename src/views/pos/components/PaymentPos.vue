@@ -5,7 +5,7 @@
         <div>{{ totalOderUs | formatMoneyUs }}</div>
       </el-form-item>
       <el-form-item label="tỉ giá ngoại tệ:">
-        <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model="cartNow.payment.exchange" v-bind="moneyConfig"></number>
+        <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model.number="cartNow.payment.exchange" v-bind="moneyConfig"></number>
       </el-form-item>
       <el-form-item label="Tổng tiền (đ):">
         <div>{{ totalOder | formatMoney }}</div>
@@ -17,7 +17,7 @@
             class="px-2 w-100 input-money-wrap_input"
             @keydown.native="skipDotAndMinusOnly"
             @change="checkMaxValue"
-            v-model="cartNow.payment.discount['đ']"
+            v-model.number="cartNow.payment.discount['đ']"
             v-bind="moneyConfig"
           ></number>
           <input
@@ -27,7 +27,7 @@
             class="px-2 w-100 input-money-wrap_input"
             @keydown="skipDotAndMinusOnly"
             @input="() => checkPercentMixin(cartNow.payment.discount, '%')"
-            v-model="cartNow.payment.discount['%']"
+            v-model.number="cartNow.payment.discount['%']"
             :max="100"
             :min="0"
           />
@@ -47,7 +47,7 @@
             v-if="cartNow.payment.tax.type == 'đ'"
             class="px-2 w-100 input-money-wrap_input"
             @keydown.native="skipDotAndMinusOnly"
-            v-model="cartNow.payment.tax['đ']"
+            v-model.number="cartNow.payment.tax['đ']"
             v-bind="moneyConfig"
           ></number>
           <input
@@ -57,7 +57,7 @@
             class="px-2 w-100 input-money-wrap_input"
             @keydown="skipDotAndMinusOnly"
             @input="() => checkPercentMixin(cartNow.payment.tax, '%')"
-            v-model="cartNow.payment.tax['%']"
+            v-model.number="cartNow.payment.tax['%']"
             :max="100"
             :min="0"
           />
@@ -75,7 +75,7 @@
         <b> {{ totalOderFinal | formatMoney }} </b>
       </el-form-item>
       <el-form-item label="Tiền khách đưa:">
-        <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model="cartNow.payment.customerPay" v-bind="moneyConfig"></number>
+        <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model.number="cartNow.payment.customerPay" v-bind="moneyConfig"></number>
       </el-form-item>
       <div>
         <el-button size="mini" @click="cartNow.payment.customerPay = item" class="mb-2 custom-btn-price" v-for="(item, i) in suggestMoneyList" :key="i">{{

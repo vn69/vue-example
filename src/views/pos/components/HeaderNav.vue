@@ -91,13 +91,17 @@ export default {
       this.$toast.success("Đã xóa đơn hàng!");
     },
     doRemoveTab(index) {
+      console.log(index, this.get_cartId);
+      // return 
       if (this.cartsData.length == 1) {
         this.set_cartId(0);
         this.clearCart();
         return;
       }
       this.cartsData.splice(index, 1);
-      this.set_cartId(0);
+      if (index == this.get_cartId && this.get_cartId != 0) {
+        this.set_cartId(index-1);
+      }
       this.$toast.success("Đã xóa đơn hàng!");
     },
     logOut() {

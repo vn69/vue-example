@@ -11,6 +11,9 @@
       </div>
     </div>
     <el-button @click="isCheckLoading('loading')">test</el-button>
+    <input v-model.number="string"/>
+    <el-input-number v-model="number" :min="1" :max="10"></el-input-number>
+
   </div>
 </template>
 
@@ -22,6 +25,8 @@ export default {
     return {
       posts: [],
       loading: false,
+      string: 0,
+      number: 0
     };
   },
   created() {

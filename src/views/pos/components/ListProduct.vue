@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table :height="showAllProducts ? 'calc(100vh - 550px)' : `calc(100vh - ${550 - 223}px)`" :data="cartsData[get_cartId].cart" style="width: 100%">
+    <el-table height="calc(100vh - 320px)" :data="cartsData[get_cartId].cart" style="width: 100%">
       <el-table-column label="Sản phẩm" width="400px">
         <template slot-scope="scope">
           <ProductItem :product="getProductById(scope.row.productId)" @selectProduct=""></ProductItem>
@@ -31,23 +31,19 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-card class="all-prpduct mt-2" :class="{ active: showAllProducts }">
-      <div class="row">
-        <div class="col-6 mb-2" v-for="item in productShow" :key="item.id">
-          <ProductItem class="custom-product border" :product="getProductById(item.id)" @selectProduct="selectProductMixin"></ProductItem>
-        </div>
-      </div>
-    </el-card>
     <div class="mt-2 d-flex justify-content-between align-items-center">
-      <el-button @click="showAllProducts = !showAllProducts">Show All</el-button>
-      <el-pagination
-        v-show="showAllProducts"
-        background
-        :current-page.sync="currentPage"
-        :page-size="sizePage"
-        layout="prev, pager, next"
-        :total="get_products.length"
-      ></el-pagination>
+      <el-popover v-model="showAllProducts" placement="top-start" width="800" trigger="click">
+        <el-button slot="reference">Show All</el-button>
+        <!-- show -->
+        <div class="all-prpduct">
+          <div class="row">
+            <div class="col-6 mb-2" v-for="item in productShow" :key="item.id">
+              <ProductItem class="custom-product border" :product="getProductById(item.id)" @selectProduct="selectProductMixin"></ProductItem>
+            </div>
+          </div>
+        </div>
+        <el-pagination class="text-end" background :current-page.sync="currentPage" :page-size="sizePage" layout="prev, pager, next" :total="get_products.length"></el-pagination>
+      </el-popover>
     </div>
   </div>
 </template>
@@ -65,7 +61,7 @@ export default {
     return {
       showAllProducts: false,
       currentPage: 1,
-      sizePage: 4,
+      sizePage: 10,
     };
   },
   methods: {
@@ -113,13 +109,5 @@ export default {
 }
 .custom-product:hover {
   background-color: #aaa;
-}
-.all-prpduct {
-  max-height: 0;
-  display: none;
-}
-.all-prpduct.active {
-  max-height: 300px;
-  display: block;
 }
 </style>
