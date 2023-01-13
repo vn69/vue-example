@@ -55,9 +55,9 @@ export default {
   methods: {
     ...mapMutations("pos", ["set_cartId"]),
     querySearch(queryString, cb) {
-      const productsData = this.get_products;
+      const productsData = _.cloneDeep(this.get_products);
       const search = convertToRawString(queryString.trim());
-      const results = search ? productsData.filter((e) => convertToRawString(e.title).includes(search)) : productsData;
+      const results = search ? productsData.filter((e) => convertToRawString(e.title).includes(search)) : productsData.sort((a, b) => b.maxQuantity - a.maxQuantity);
       cb(results);
     },
     // tab
@@ -72,7 +72,6 @@ export default {
       this.set_cartId(index);
     },
     removeTab(index) {
-      console.log(index);
       if (this.cartsData[index].cart.length == 0) {
         this.doRemoveTab(index);
         return;
@@ -81,7 +80,7 @@ export default {
         confirmButtonText: "Xóa",
         callback: (action) => {
           if (action == "confirm") {
-            this.doRemoveTab(index)
+            this.doRemoveTab(index);
           }
         },
       });
@@ -92,22 +91,24 @@ export default {
     },
     doRemoveTab(index) {
       console.log(index, this.get_cartId);
-      // return 
+      // return
       if (this.cartsData.length == 1) {
         this.set_cartId(0);
         this.clearCart();
         return;
       }
-      this.cartsData.splice(index, 1);
-      if (index == this.get_cartId && this.get_cartId != 0) {
-        this.set_cartId(index-1);
+      if (index == this.get_cartId && this.get_cartId > 0) {
+        this.set_cartId(index - 1);
+      } else if (index < this.get_cartId) {
+        this.set_cartId(this.get_cartId - 1);
       }
+      this.cartsData.splice(index, 1);
       this.$toast.success("Đã xóa đơn hàng!");
     },
     logOut() {
       localStorage.clear();
-      window.location.href = window.location.href
-    }
+      window.location.href = window.location.href;
+    },
   },
   computed: {
     ...mapGetters("pos", ["get_products", "get_cartId"]),

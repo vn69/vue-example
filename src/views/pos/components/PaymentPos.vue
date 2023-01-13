@@ -5,67 +5,25 @@
         <div>{{ totalOderUs | formatMoneyUs }}</div>
       </el-form-item>
       <el-form-item label="tỉ giá ngoại tệ:">
-        <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model.number="cartNow.payment.exchange" v-bind="moneyConfig"></number>
+        <number
+          class="px-2 w-100"
+          @keydown.native="skipDotAndMinusOnly"
+          v-model.number="cartNow.payment.exchange"
+          v-bind="moneyConfig"
+        ></number>
       </el-form-item>
       <el-form-item label="Tổng tiền (đ):">
         <div>{{ totalOder | formatMoney }}</div>
       </el-form-item>
       <el-form-item label="Chiết khấu:">
-        <div class="input-money-wrap">
-          <number
-            v-if="cartNow.payment.discount.type == 'đ'"
-            class="px-2 w-100 input-money-wrap_input"
-            @keydown.native="skipDotAndMinusOnly"
-            @change="checkMaxValue"
-            v-model.number="cartNow.payment.discount['đ']"
-            v-bind="moneyConfig"
-          ></number>
-          <input
-            type="number"
-            step="1"
-            v-if="cartNow.payment.discount.type == '%'"
-            class="px-2 w-100 input-money-wrap_input"
-            @keydown="skipDotAndMinusOnly"
-            @input="() => checkPercentMixin(cartNow.payment.discount, '%')"
-            v-model.number="cartNow.payment.discount['%']"
-            :max="100"
-            :min="0"
-          />
-          <el-radio-group class="input-money-wrap_type" v-model="cartNow.payment.discount.type">
-            <el-radio-button label="đ"></el-radio-button>
-            <el-radio-button label="%"></el-radio-button>
-          </el-radio-group>
-        </div>
+        <InputMoneyOption v-model="cartNow.payment.discount" :max="totalOder"></InputMoneyOption>
         <div class="text-success">
           - {{ totalDiscount | formatMoney }}
           <span v-if="cartNow.payment.discount.type == '%'"> (-{{ +cartNow.payment.discount["%"] }}%) </span>
         </div>
       </el-form-item>
       <el-form-item label="Thuế:">
-        <div class="input-money-wrap">
-          <number
-            v-if="cartNow.payment.tax.type == 'đ'"
-            class="px-2 w-100 input-money-wrap_input"
-            @keydown.native="skipDotAndMinusOnly"
-            v-model.number="cartNow.payment.tax['đ']"
-            v-bind="moneyConfig"
-          ></number>
-          <input
-            type="number"
-            step="1"
-            v-if="cartNow.payment.tax.type == '%'"
-            class="px-2 w-100 input-money-wrap_input"
-            @keydown="skipDotAndMinusOnly"
-            @input="() => checkPercentMixin(cartNow.payment.tax, '%')"
-            v-model.number="cartNow.payment.tax['%']"
-            :max="100"
-            :min="0"
-          />
-          <el-radio-group class="input-money-wrap_type" v-model="cartNow.payment.tax.type">
-            <el-radio-button label="đ"></el-radio-button>
-            <el-radio-button label="%"></el-radio-button>
-          </el-radio-group>
-        </div>
+        <InputMoneyOption v-model="cartNow.payment.tax"></InputMoneyOption>
         <div class="text-danger">
           + {{ totalTax | formatMoney }}
           <span v-if="cartNow.payment.tax.type == '%'"> (+{{ +cartNow.payment.tax["%"] }}%) </span>
@@ -99,10 +57,12 @@ import { getListSuggestMoney } from "../../../utils/function.js";
 import utils from "../utils";
 import productCode from "../../../utils/mixin/product";
 import { mapGetters } from "vuex";
+import InputMoneyOption from "./InputMoneyOption.vue";
 
 export default {
   props: ["cartsData"],
   mixins: [utils, productCode],
+  components: { InputMoneyOption },
   data() {
     return {
       suggestMoneyList: [],
@@ -183,8 +143,10 @@ export default {
   watch: {
     totalOderFinal: {
       handler(val) {
-        this.suggestMoneyList = getListSuggestMoney(val);
-        if (val) this.cartNow.payment.customerPay = 0;
+        if(val && val > 0) {
+          this.cartNow.payment.customerPay = 0;
+          this.suggestMoneyList = getListSuggestMoney(val);
+        }
       },
     },
   },

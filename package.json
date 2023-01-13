@@ -7,7 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@coders-tm/vue-number-format": "2.2.12",
+    "@coders-tm/vue-number-format": "^2.2.12",
     "axios": "^1.2.2",
     "core-js": "^3.8.3",
     "element-ui": "^2.15.12",
