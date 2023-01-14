@@ -13,8 +13,13 @@
         </div>
         <div class="col-4 h-100">
           <el-card class="h-100 scroll-y">
-            <div class="d-flex justify-content-between" slot="header">
+            <div class="d-flex justify-content-between align-items-center relative" slot="header">
               <span>Thanh Toán</span>
+              <el-popover placement="bottom-end" width="400" trigger="click">
+                <el-button class="btn-setting" slot="reference" icon="el-icon-setting" circle></el-button>
+                <!-- content -->
+                <SettingPos></SettingPos>
+              </el-popover>
             </div>
             <PaymentPos :cartsData="cartsData"></PaymentPos>
           </el-card>
@@ -34,9 +39,10 @@ import _ from "lodash";
 import productCode from "../../utils/mixin/product.js";
 import utils from "./utils";
 import { saveLocalStore, getLocalStore } from "@/utils/function";
+import SettingPos from './components/SettingPos.vue';
 
 export default {
-  components: { HeaderNav, PaymentPos, ListProduct },
+  components: { HeaderNav, PaymentPos, ListProduct, SettingPos },
   mixins: [productCode, utils],
   data() {
     return {
@@ -53,7 +59,7 @@ export default {
       console.log("init data");
       const carts = getLocalStore("carts") || [];
       if (carts.length == 0) {
-        const newCart = _.cloneDeep(this.newCartRaw);
+        const newCart = this.cloneNewCart();
         carts.push(newCart);
       }
       this.cartsData = carts;
@@ -77,5 +83,10 @@ export default {
 <style lang="scss" scoped>
 .pos-wrap {
   height: calc(100vh - 175px);
+}
+.btn-setting {
+  position: absolute;
+  right: 0;
+  top: -9px;
 }
 </style>

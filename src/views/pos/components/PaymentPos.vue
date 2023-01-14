@@ -35,8 +35,8 @@
       <el-form-item label="Tiền khách đưa:">
         <number class="px-2 w-100" @keydown.native="skipDotAndMinusOnly" v-model.number="cartNow.payment.customerPay" v-bind="moneyConfig"></number>
       </el-form-item>
-      <div>
-        <el-button size="mini" @click="cartNow.payment.customerPay = item" class="mb-2 custom-btn-price" v-for="(item, i) in suggestMoneyList" :key="i">{{
+      <div class="mt-3">
+        <el-button size="medium" @click="cartNow.payment.customerPay = item" class="mb-2 custom-btn-price" v-for="(item, i) in suggestMoneyList" :key="i">{{
           item | formatMoney
         }}</el-button>
       </div>
@@ -90,7 +90,7 @@ export default {
           this.setProductsDataMixin(products);
           console.log(this.cartNow.cart);
           //add new Cart
-          const newCart = _.cloneDeep(this.newCartRaw);
+          const newCart = this.cloneNewCart();
           this.cartsData.splice(this.get_cartId, 1, newCart);
           this.$toast.success("Đã thanh toán thành công!");
         } else {
@@ -146,6 +146,8 @@ export default {
         if(val && val > 0) {
           this.cartNow.payment.customerPay = 0;
           this.suggestMoneyList = getListSuggestMoney(val);
+        } else {
+          this.suggestMoneyList = []
         }
       },
     },

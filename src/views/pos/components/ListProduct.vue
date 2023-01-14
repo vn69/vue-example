@@ -45,12 +45,18 @@
         <div class="d-flex align-items-center justify-content-between">
           <div>
             <span> Bộ lọc: </span>
-            <span v-if="priceFilter==null" @click="priceFilter = 'low'" class="text-primary cursor">Theo giá SP</span>
-            <span v-if="priceFilter=='high'" @click="priceFilter = 'low'" class="text-primary cursor">Giá cao</span>
-            <span v-if="priceFilter=='low'" @click="priceFilter = 'high'" class="text-primary cursor">Giá thấp</span>
+            <span v-if="priceFilter == null" @click="priceFilter = 'low'" class="text-primary cursor">Theo giá SP</span>
+            <span v-if="priceFilter == 'high'">
+              <span @click="priceFilter = 'low'" class="text-primary cursor">Giá cao</span>
+              <el-icon @click.native="priceFilter = null" class="el-icon-close ms-1 cursor"></el-icon>
+            </span>
+            <span v-if="priceFilter == 'low'">
+              <span @click="priceFilter = 'high'" class="text-primary cursor">Giá thấp</span>
+              <el-icon @click.native="priceFilter = null" class="el-icon-close ms-1 cursor"></el-icon>
+            </span>
             <el-checkbox class="ms-3" v-model="isHasQuantity">Còn hàng</el-checkbox>
           </div>
-          <el-pagination class="text-end" background :current-page.sync="currentPage" :page-size="sizePage" layout="prev, pager, next" :total="get_products.length"></el-pagination>
+          <el-pagination class="text-end" background :current-page.sync="currentPage" :page-size="sizePage" layout="prev, pager, next" :total="listProduct.length"></el-pagination>
         </div>
       </el-popover>
     </div>
@@ -70,7 +76,7 @@ export default {
     return {
       showAllProducts: false,
       currentPage: 1,
-      sizePage: 10,
+      sizePage: 8,
       priceFilter: null,
       isHasQuantity: false,
     };
@@ -104,16 +110,20 @@ export default {
     cartNow() {
       return this.cartsData[this.get_cartId];
     },
-    productShow() {
-      let listProduct = _.cloneDeep(this.get_products)
-      if(this.isHasQuantity) listProduct = listProduct.filter(item => item.maxQuantity)
-      if(this.priceFilter == "low") {
-        listProduct = listProduct.sort((a,b) => a.price - b.price)
-      } else {
-        listProduct = listProduct.sort((a,b) => b.price - a.price)
+    listProduct() {
+      let listProduct = _.cloneDeep(this.get_products);
+      if (this.isHasQuantity) listProduct = listProduct.filter((item) => item.maxQuantity);
+      if (this.priceFilter == "low") {
+        listProduct = listProduct.sort((a, b) => a.price - b.price);
+      } 
+      if (this.priceFilter == "high") {
+        listProduct = listProduct.sort((a, b) => b.price - a.price);
       }
+      return listProduct
+    },
+    productShow() {
       const index = (this.currentPage - 1) * this.sizePage;
-      const result = listProduct.slice(index, index + this.sizePage);
+      const result = this.listProduct.slice(index, index + this.sizePage);
       return result;
     },
   },
@@ -129,6 +139,6 @@ export default {
   background-color: #aaa;
 }
 .all-prpduct {
-  min-height: 432px;
+  min-height: 350px;
 }
 </style>

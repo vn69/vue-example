@@ -67,7 +67,7 @@ export default {
         return;
       }
       const index = this.cartsData.length;
-      const newCart = _.cloneDeep(this.newCartRaw);
+      const newCart = this.cloneNewCart();
       this.cartsData.push(newCart);
       this.set_cartId(index);
     },

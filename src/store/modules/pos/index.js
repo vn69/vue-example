@@ -7,6 +7,10 @@ export default {
     productsMap: getLocalStore("productsMap") || [],
     carts: getLocalStore("carts") || [],
     cartId: 0,
+    paymentSetting: getLocalStore("paymentSetting") || {
+      exchange: 23000,
+      tax: 0,
+    },
   },
   getters: {
     get_products(state) {
@@ -20,6 +24,9 @@ export default {
     },
     get_cartId(state) {
       return state.cartId;
+    },
+    get_paymentSetting(state) {
+      return state.paymentSetting;
     },
   },
   mutations: {
@@ -37,7 +44,10 @@ export default {
     set_cartId(state, payload) {
       state.cartId = payload;
     },
+    set_paymentSetting(state, payload) {
+      state.paymentSetting = payload;
+      saveLocalStore("paymentSetting", payload);
+    },
   },
-  actions: {
-  },
+  actions: {},
 };

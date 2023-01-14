@@ -24,25 +24,25 @@ export default {
     };
   },
   methods: {
-    getProductById(id){
-      return this.get_productsMap[id]
+    getProductById(id) {
+      return this.get_productsMap[id];
     },
     getFinalValueMixin(value, parent) {
       if (parent.type == "đ") return +parent["đ"];
       if (parent.type == "%") return Math.floor(+value * (+parent["%"] / 100));
     },
     selectProductMixin(product) {
-      if(product.maxQuantity == 0) {
+      if (product.maxQuantity == 0) {
         this.$toast.error("Sản phẩm đã hết hàng!");
-        return
+        return;
       }
       const findedProduct = this.cartsData[this.get_cartId].cart.find((e) => e.productId == product.id);
 
       if (findedProduct) {
-        console.log(333 ,product, findedProduct);
-        if(findedProduct.quantity >= product.maxQuantity) {
+        console.log(333, product, findedProduct);
+        if (findedProduct.quantity >= product.maxQuantity) {
           this.$toast.error(`Sản phẩm có thể bán tối đa là:${product.maxQuantity} !`);
-          return
+          return;
         }
         findedProduct.quantity++;
       } else {
@@ -53,8 +53,21 @@ export default {
       }
       this.$toast.success("Đã thêm vào giỏ hàng!");
     },
+    cloneNewCart() {
+      const newCartRaw = _.cloneDeep(this.newCartRaw);
+      newCartRaw.payment = {
+        ...newCartRaw.payment,
+        exchange: this.get_paymentSetting.exchange,
+        tax: {
+          type: "%",
+          đ: 0,
+          "%": this.get_paymentSetting.tax,
+        },
+      };
+      return newCartRaw;
+    },
   },
   computed: {
-    ...mapGetters("pos", ["get_productsMap"])
-  }
+    ...mapGetters("pos", ["get_productsMap", "get_paymentSetting"]),
+  },
 };

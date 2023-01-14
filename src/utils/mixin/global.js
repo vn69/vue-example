@@ -21,6 +21,7 @@ export default {
     checkPercentMixin(parent, key) {
       if (parent[key] > 100) parent[key] = 100;
       if (parent[key] < 0) parent[key] = 0;
+      if (parent[key] == "") parent[key] = 0;
     },
     checkMinMaxValueNumber(item, key, minValue, maxValue) {
       if(maxValue || maxValue == 0) {
