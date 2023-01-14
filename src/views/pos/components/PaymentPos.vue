@@ -41,11 +41,11 @@
         }}</el-button>
       </div>
       <el-form-item class="mb-0" label="Tiền thừa:">
-        <div>{{ getReturnMoney > 0 ? getReturnMoney : 0 | formatMoney }}</div>
+        <div>{{getReturnMoney | formatMoney }}</div>
       </el-form-item>
     </el-form>
     <div class="mt-3 d-flex justify-content-center">
-      <el-button type="primary" :disabled="getReturnMoney < 0" @click="paymentMoney">Thanh toán</el-button>
+      <el-button type="primary" :disabled="getReturnMoney < -1000" @click="paymentMoney">Thanh toán</el-button>
       <el-button type="primary" disabled>Thanh toán đa phương thức</el-button>
     </div>
   </div>
