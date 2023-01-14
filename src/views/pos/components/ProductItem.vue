@@ -11,7 +11,7 @@
       <b class="product_item_title">{{ product.title }}</b>
       <b class="w-100">$ {{ product.price }}</b>
     </div>
-    <div class="mr-2">SL: {{ product.maxQuantity }}</div>
+    <div class="mr-2">(SL: {{ product.maxQuantity }})</div>
   </div>
 </template>
 

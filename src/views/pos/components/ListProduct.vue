@@ -88,21 +88,18 @@ export default {
         callback: (action) => {
           if (action == "confirm") {
             const index = this.cartNow.cart.findIndex((e) => e.productId == product.productId);
-            console.log(index, this.cartNow.cart);
             if (index > -1) {
               this.cartNow.cart.splice(index, 1);
               this.$toast.success("Đã xóa sản phẩm!");
             }
           } else {
-            if (product.quantity == 0) {
-              product.quantity = 1;
-            }
+            product.quantity = 1;
           }
         },
       });
     },
     changeQuantityProduct(quantity, product) {
-      if (quantity == 0) this.deleteItem(product);
+      if (!quantity || quantity == 0) this.deleteItem(product);
     },
   },
   computed: {
@@ -115,11 +112,11 @@ export default {
       if (this.isHasQuantity) listProduct = listProduct.filter((item) => item.maxQuantity);
       if (this.priceFilter == "low") {
         listProduct = listProduct.sort((a, b) => a.price - b.price);
-      } 
+      }
       if (this.priceFilter == "high") {
         listProduct = listProduct.sort((a, b) => b.price - a.price);
       }
-      return listProduct
+      return listProduct;
     },
     productShow() {
       const index = (this.currentPage - 1) * this.sizePage;
