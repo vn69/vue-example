@@ -29,6 +29,9 @@ Vue.config.productionTip = false
 import global from './utils/mixin/global';
 Vue.mixin(global)
 
+import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
+
+
 new Vue({
   router,
   store,

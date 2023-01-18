@@ -39,6 +39,11 @@ const routes = [
     name: 'demo form',
     component: () => import('../views/DemoForm.vue')
   },
+  {
+    path: '/landi-page',
+    name: 'landi page',
+    component: () => import('../views/landi/landiPage.vue')
+  },
   
 ]
 

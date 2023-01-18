@@ -1,65 +1,42 @@
 <template>
-  <div class="container">
-    <h2 class="text-center">Fetch Data</h2>
-    <div class="w-100 text-center">
-      <el-button @click="fetchData" type="primary" icon="el-icon-refresh" circle></el-button>
-    </div>
-    <div class="show-post" v-loading="loading">
-      <div class="mb-4" v-for="post in posts" :key="post.id">
-        <h4 class="title">{{ post.title }}</h4>
-        <div class="body">{{ post.body }}</div>
-      </div>
-    </div>
-    <el-button @click="isCheckLoading('loading')">test</el-button>
-    <input v-model.number="string"/>
-    <el-input-number v-model="number" :min="1" :max="10"></el-input-number>
-
+  <div>
+    <VueSelecto
+      :container="document.body"
+      :dragContainer="window"
+      :selectableTargets="['.target']"
+      :selectByClick="true"
+      :selectFromInside="true"
+      :continueSelect="false"
+      :toggleContinueSelect="'shift'"
+      :keyContainer="window"
+      :hitRate="100"
+      @select="onSelect"
+    />
   </div>
 </template>
-
 <script>
-import axios from "axios";
+import { VueSelecto } from "vue-selecto";
+
 export default {
-  components: {},
+  components: {
+    VueSelecto,
+  },
   data() {
     return {
-      posts: [],
-      loading: false,
-      string: 0,
-      number: 0
+      document: document,
+      window: window,
     };
   },
-  created() {
-    this.fetchData();
-  },
   methods: {
-    async fetchData() {
-      this.posts = []
-      this.loading = true
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      try {
-        const response = await axios.get(`http://jsonplaceholder.typicode.com/posts`);
-        if (response.status == 200) {
-          this.posts = response.data;
-        } else {
-          console.log(response);
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.loading = false
-      }
+    onSelect(e) {
+      console.log(e);
+      e.added.forEach((el) => {
+        el.classList.add("selected");
+      });
+      e.removed.forEach((el) => {
+        el.classList.remove("selected");
+      });
     },
-    isCheckLoading(e) {
-      this[e] = !this[e]
-    }
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.show-post {
-  height: 600px;
-  overflow-y: auto;
-}
-</style>
